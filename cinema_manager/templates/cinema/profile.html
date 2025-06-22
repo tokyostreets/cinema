@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Мой профиль{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Личные данные</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Имя пользователя:</strong> {{ user.username }}</p>
+                <p><strong>Имя:</strong> {{ user.first_name }}</p>
+                <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Телефон:</strong> {{ user.phone|default:"Не указан" }}</p>
+                <p><strong>Дата рождения:</strong> {{ user.birth_date|date:"d.m.Y"|default:"Не указана" }}</p>
+                
+                <a href="{% url 'admin:cinema_user_change' user.id %}" class="btn btn-outline-primary mt-2">
+                    Редактировать профиль
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>Мои билеты</h3>
+            </div>
+            <div class="card-body">
+                {% if tickets %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Фильм</th>
+                                <th>Дата сеанса</th>
+                                <th>Зал</th>
+                                <th>Место</th>
+                                <th>Цена</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ticket in tickets %}
+                            <tr>
+                                <td>{{ ticket.session.movie.title }}</td>
+                                <td>{{ ticket.session.start_time|date:"d.m.Y H:i" }}</td>
+                                <td>{{ ticket.session.hall.name }}</td>
+                                <td>Ряд {{ ticket.row }}, Место {{ ticket.seat }}</td>
+                                <td>{{ ticket.price }} руб.</td>
+                                <td>
+                                    {% if ticket.is_paid %}
+                                        <span class="badge bg-success">Оплачен</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">Ожидает оплаты</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    У вас нет купленных билетов. <a href="{% url 'cinema:home' %}">Посмотрите расписание</a>.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

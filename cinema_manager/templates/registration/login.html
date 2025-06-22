@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход в систему{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">Вход в систему</h2>
+            </div>
+            <div class="card-body">
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        Неправильное имя пользователя или пароль. Попробуйте снова.
+                    </div>
+                {% endif %}
+
+                {% if next %}
+                    {% if user.is_authenticated %}
+                    <div class="alert alert-warning">
+                        У вашей учетной записи нет доступа к этой странице.
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        Пожалуйста, войдите, чтобы увидеть эту страницу.
+                    </div>
+                    {% endif %}
+                {% endif %}
+
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Имя пользователя</label>
+                        <input type="text" name="username" class="form-control" id="id_username" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">Пароль</label>
+                        <input type="password" name="password" class="form-control" id="id_password" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary w-100">Войти</button>
+                        <input type="hidden" name="next" value="{{ next }}">
+                    </div>
+                </form>
+
+                <div class="text-center">
+                    <p>Ещё нет аккаунта? <a href="{% url 'cinema:register' %}">Зарегистрируйтесь</a></p>
+                    <p><a href="{% url 'password_reset' %}">Забыли пароль?</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

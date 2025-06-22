@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Ошибка{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h2 class="mb-0">
+                        <i class="bi bi-exclamation-octagon-fill"></i>
+                        {% block error_title %}Произошла ошибка{% endblock %}
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger">
+                        <h4 class="alert-heading">
+                            <i class="bi bi-bug-fill"></i>
+                            {% block error_message %}Неизвестная ошибка{% endblock %}
+                        </h4>
+                        {% if error_description %}
+                        <p>{{ error_description }}</p>
+                        {% endif %}
+                        {% if error_code %}
+                        <hr>
+                        <p class="mb-0">
+                            <small>Код ошибки: {{ error_code }}</small>
+                        </p>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
+                        <a href="{% url 'cinema:home' %}" class="btn btn-primary">
+                            <i class="bi bi-house-door"></i> На главную
+                        </a>
+                        <button onclick="history.back()" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Назад
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    .alert {
+        border-left: 5px solid #dc3545;
+    }
+</style>
+{% endblock %}

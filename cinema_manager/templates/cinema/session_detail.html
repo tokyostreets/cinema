@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>{{ session.movie.title }}</h1>
+        <p><strong>Зал:</strong> {{ session.hall.name }}</p>
+        <p><strong>Время:</strong> {{ session.start_time|date:"d.m.Y H:i" }}</p>
+        <p><strong>Цена:</strong> {{ session.base_price }} руб.</p>
+        
+        <h2 class="mt-4">Схема зала</h2>
+        <div class="hall-container">
+            <!-- Экран -->
+            <div class="screen text-center mb-4 p-2 bg-dark text-white rounded">
+                ЭКРАН
+            </div>
+            
+            <!-- Схема мест -->
+            <div class="seating-plan">
+                {% for row in rows_range %}
+                <div class="seat-row d-flex justify-content-center mb-2">
+                    <div class="row-label me-2">Ряд {{ row }}</div>
+                    
+                    <div class="seats d-flex">
+                        {% for seat in seats_range %}
+                            {% with seat_id=row|stringformat:"s"|add:"-"|add:seat|stringformat:"s" %}
+                            {% if seat_id in booked_seats_ids %}
+                                <div class="seat booked mx-1" 
+                                     title="Ряд {{ row }}, Место {{ seat }}">
+                                    {{ seat }}
+                                </div>
+                            {% else %}
+                                <div class="seat available mx-1" 
+                                     title="Ряд {{ row }}, Место {{ seat }}"
+                                     data-row="{{ row }}" 
+                                     data-seat="{{ seat }}"
+                                     onclick="selectSeat(this)">
+                                    {{ seat }}
+                                </div>
+                            {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <h3>Бронирование</h3>
+        
+        {% if user.is_authenticated %}
+            <form method="post" id="booking-form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                
+                <div class="discount-section mb-3">
+                    <h5>Применить скидку</h5>
+                    {{ discount_form.as_p }}
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="apply-discount">
+                        Применить
+                    </button>
+                </div>
+                
+                <div id="price-display" class="mb-3">
+                    <strong>Итоговая цена: </strong>
+                    <span id="final-price">{{ session.base_price }}</span> руб.
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Забронировать</button>
+            </form>
+        {% else %}
+            <div class="alert alert-info">
+                Для бронирования билетов необходимо <a href="{% url 'login' %}">войти</a> или 
+                <a href="{% url 'cinema:register' %}">зарегистрироваться</a>.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hall-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .screen {
+        width: 80%;
+        margin: 0 auto 20px;
+        font-weight: bold;
+    }
+    .seat {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+    .seat.booked {
+        background-color: #dc3545;
+        color: white;
+        cursor: not-allowed;
+    }
+    .seat.available {
+        background-color: #28a745;
+        color: white;
+    }
+    .seat.selected {
+        background-color: #007bff;
+        box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    }
+    .row-label {
+        width: 60px;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function selectSeat(element) {
+    // Снимаем выделение со всех мест
+    document.querySelectorAll('.seat.selected').forEach(seat => {
+        seat.classList.remove('selected');
+    });
+    
+    // Выделяем выбранное место
+    element.classList.add('selected');
+    
+    // Заполняем форму
+    document.getElementById('id_row').value = element.dataset.row;
+    document.getElementById('id_seat').value = element.dataset.seat;
+}
+</script>
+{% endblock %}

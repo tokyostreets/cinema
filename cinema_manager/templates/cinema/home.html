@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Ближайшие сеансы</h2>
+    {% if upcoming_sessions %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for session in upcoming_sessions %}
+        <div class="col">
+            <div class="card h-100">
+                <img src="{{ session.movie.poster.url }}" class="card-img-top" alt="{{ session.movie.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ session.movie.title }}</h5>
+                    <p class="card-text">
+                        <small class="text-muted">{{ session.start_time|date:"d.m.Y H:i" }}</small><br>
+                        Зал: {{ session.hall.name }}<br>
+                        Цена: {{ session.base_price }} руб.
+                    </p>
+                    <a href="{% url 'cinema:session_detail' session.id %}" class="btn btn-primary">Подробнее</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">Нет предстоящих сеансов</div>
+    {% endif %} 
+
+    <h2 class="mt-5">Все фильмы</h2>
+    <div class="row row-cols-2 row-cols-md-4 g-4">
+        {% for movie in movies %}
+        <div class="col">
+            <div class="card h-100">
+                <img src="{{ movie.poster.url }}" class="card-img-top" alt="{{ movie.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ movie.title }}</h5>
+                    <a href="{% url 'cinema:movie_detail' movie.id %}" class="btn btn-outline-primary">Подробнее</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

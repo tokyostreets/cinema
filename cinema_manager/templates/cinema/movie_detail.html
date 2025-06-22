@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ movie.title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="img-fluid mb-4">
+    </div>
+    
+    <div class="col-md-8">
+        <h1>{{ movie.title }}</h1>
+        <p><strong>Жанр:</strong> {{ movie.genre }}</p>
+        <p><strong>Режиссер:</strong> {{ movie.director }}</p>
+        <p><strong>Длительность:</strong> {{ movie.duration }} мин.</p>
+        <p><strong>Возрастной рейтинг:</strong> {{ movie.age_rating }}+</p>
+        <p><strong>Дата выхода:</strong> {{ movie.release_date|date:"d.m.Y" }}</p>
+        
+        <h3 class="mt-4">Описание</h3>
+        <p>{{ movie.description }}</p>
+        
+        <h3 class="mt-4">Ближайшие сеансы</h3>
+        <div class="list-group">
+            {% for session in sessions %}
+            <a href="{% url 'cinema:session_detail' session.id %}" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ session.hall.name }}</h5>
+                    <small>{{ session.start_time|date:"d.m.Y H:i" }}</small>
+                </div>
+                <p class="mb-1">Цена: {{ session.base_price }} руб.</p>
+                <small>Окончание: {{ session.end_time|date:"d.m.Y H:i" }}</small>
+            </a>
+            {% empty %}
+            <div class="alert alert-info">Нет доступных сеансов</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
